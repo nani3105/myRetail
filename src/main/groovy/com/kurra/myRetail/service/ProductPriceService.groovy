@@ -5,7 +5,10 @@ import com.kurra.myRetail.domain.RedSkyProductResponse
 import com.kurra.myRetail.repository.ProductRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.rest.webmvc.ResourceNotFoundException
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
+
+import java.util.concurrent.CompletableFuture
 
 /**
  * User: Niranjan.kurra - Date: 8/20/18 6:47 PM
@@ -37,6 +40,11 @@ class ProductPriceService {
                                                 price: price, currencyCode: 'USD'))
             price
         }
+    }
+
+    @Async
+    CompletableFuture<BigDecimal> getPriceAsync(Long id) {
+        CompletableFuture.completedFuture(getPrice(id))
     }
 
     /**

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+import java.util.concurrent.CompletableFuture
+
 /**
  * User: Niranjan.kurra - Date: 8/20/18 5:59 PM
  */
@@ -40,5 +42,15 @@ class ProductsController {
             throw new IllegalArgumentException('Null price cannot be passed')
         }
         productPriceService.updatePrice(id, request.currentPrice.value)
+    }
+
+    @GetMapping('/async/{id}')
+    ProductDTO getProductAsync(@PathVariable('id') Long id) {
+        CompletableFuture<String> cProductName = redSkyService.getProductNameAsync(id)
+        CompletableFuture<String> cPrice = productPriceService.getPriceAsync(id)
+        CompletableFuture<ProductDTO> cProductDto = cPrice.thenCombine(cProductName) { price, name ->
+            new ProductDTO(id: id, name: name, currentPrice: new CurrentPrice(value: price, currenyCode: 'USD'))
+        }
+        cProductDto.get()
     }
 }

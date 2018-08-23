@@ -4,10 +4,13 @@ import com.kurra.myRetail.domain.RedSkyProductResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClientException
 import org.springframework.web.client.RestTemplate
+
+import java.util.concurrent.CompletableFuture
 
 /**
  * User: Niranjan.kurra - Date: 8/20/18 6:08 PM
@@ -33,5 +36,15 @@ class RedSkyService {
 
     RedSkyProductResponse getPrice(long id) {
         restTemplate.getForObject(redskyPriceUrl, RedSkyProductResponse, [id: id])
+    }
+
+    @Async
+    CompletableFuture<String> getProductNameAsync(long id) {
+        CompletableFuture.completedFuture(getProductName(id))
+    }
+
+    @Async
+    CompletableFuture<RedSkyProductResponse> getPriceAsync(long id) {
+        CompletableFuture.completedFuture(getPrice(id))
     }
 }
